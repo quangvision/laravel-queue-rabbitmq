@@ -92,6 +92,8 @@ class RabbitMQConnector implements ConnectorInterface
      */
     protected function createQueue(string $worker, AbstractConnection $connection, string $queue, array $options = [])
     {
+        $options = $this->getQueueOptions($queue, $options);
+
         switch ($worker) {
             case 'default':
                 return new RabbitMQQueue($connection, $queue, $options);
@@ -124,5 +126,15 @@ class RabbitMQConnector implements ConnectorInterface
         }
 
         return $array;
+    }
+
+    /**
+     * @param string $queue
+     * @param array $options
+     * @return array
+     */
+    private function getQueueOptions(string $queue, array $options): array
+    {
+        return (config('rabbitmq_options.' . $queue) ?? []) + $options;
     }
 }
